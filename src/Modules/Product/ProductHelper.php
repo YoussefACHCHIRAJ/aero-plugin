@@ -5,47 +5,6 @@ namespace Aero\Modules\Product;
 
 class ProductHelper
 {
-    public function wc_get_product_id_by_slug($slug)
-    {
-        global $wpdb;
-        $query = $wpdb->prepare("
-        SELECT ID
-        FROM {$wpdb->posts}
-        WHERE post_name = %s
-        AND post_type = 'product'
-        AND post_status = 'publish'
-    ", $slug);
-
-        return $wpdb->get_var($query);
-    }
-
-    public function wc_get_product_ids_by_tags($tags)
-    {
-        global $wpdb;
-
-        if (!is_array($tags)) {
-            $tags = [$tags];
-        }
-
-        $placeholders = implode(',', array_fill(0, count($tags), '%s'));
-
-        $query = $wpdb->prepare("
-        SELECT DISTINCT p.ID
-        FROM {$wpdb->posts} AS p
-        INNER JOIN {$wpdb->term_relationships} AS tr ON p.ID = tr.object_id
-        INNER JOIN {$wpdb->term_taxonomy} AS tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
-        INNER JOIN {$wpdb->terms} AS t ON tt.term_id = t.term_id
-        WHERE p.post_type = 'product'
-        AND p.post_status = 'publish'
-        AND tt.taxonomy = 'product_tag'
-        AND t.name IN ($placeholders)
-    ", $tags);
-
-        // Get results
-        return $wpdb->get_col($query);
-    }
-
-
     public function prepare_base_product($product)
     {
 
@@ -75,6 +34,7 @@ class ProductHelper
         return $product_data;
     }
 
+    
     public function get_related_products($exclude_ids = [], $limit = 10, $categories = [], $city = null)
     {
         if (!empty($city)) {

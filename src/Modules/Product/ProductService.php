@@ -13,12 +13,14 @@ class ProductService
     protected $productHelper;
     protected $cityDao;
     protected $cityHelper;
+    protected $productDao;
 
-    public function __construct(CityHelper $cityHelper, ProductHelper $productHelper, CityDao $cityDao)
+    public function __construct(CityHelper $cityHelper, ProductHelper $productHelper, CityDao $cityDao, ProductDao $productDao)
     {
         $this->cityHelper =  $cityHelper;
         $this->productHelper = $productHelper;
         $this->cityDao = $cityDao;
+        $this->productDao = $productDao;
     }
 
 
@@ -67,7 +69,8 @@ class ProductService
             return new WP_Error('Bad Request', 'The product slug param is required.', ['status' => 400]);
         }
 
-        $product = wc_get_product($this->productHelper->wc_get_product_id_by_slug($slug));
+        $productId = $this->productDao->fetchProductIdBySlug($slug);
+        $product = wc_get_product($productId);
 
         if (!$product) {
             return new WP_Error('Bad Request', 'There is no product with the given slug.', ['status' => 404]);
@@ -87,7 +90,8 @@ class ProductService
             return new WP_Error('Bad Request', 'The serviceSlug slug param is required.', ['status' => 400]);
         }
 
-        $service = wc_get_product($this->productHelper->wc_get_product_id_by_slug($serviceSlug));
+        $productId = $this->productDao->fetchProductIdBySlug($serviceSlug);
+        $service = wc_get_product($productId);
 
         if (!$service) {
             return new WP_Error('Not Found', 'The service not exist or you may misspelled.', ['status' => 404]);
@@ -110,7 +114,7 @@ class ProductService
 
     public function get_popular_products()
     {
-        $product_ids = $this->productHelper->wc_get_product_ids_by_tags("popular-product");
+        $product_ids = $this->productDao->fetchProductsIdByTags("popular-product");
         $products = [];
 
         foreach ($product_ids as $id) {
@@ -177,58 +181,6 @@ class ProductService
                 'value' => $product->max_date_value,
             ],
             'categories' => $categories,
-            'yoast_head_json' => $yoast_head_json
-        ];
-
-        return $product_data;
-    }
-
-    private function prepare_service_for_response(WC_Product $product)
-    {
-        //* Get product image:
-        $image_id = $product->get_image_id();
-        if ($image_id) {
-            $attachment = wp_get_attachment_image_src($image_id, 'full');
-        }
-
-        if ($attachment) {
-            $image_src = current($attachment);
-        }
-
-        $yoast_head_json = [];
-        if (function_exists('YoastSEO')) {
-            $meta_helper = YoastSEO()->classes->get(Meta_Surface::class);
-            $meta = $meta_helper->for_post($product->id);
-            if ($meta) {
-                $meta_head = $meta->get_head();
-                $yoast_head_json = $meta_head->json;
-            } else {
-                $yoast_head_json = [];
-            }
-        }
-
-        //* prepare product for response:
-        $product_data = [
-            'id' => $product->get_id(),
-            'name' => $product->get_name(),
-            'slug' => $product->get_slug(),
-            'price' => $product->get_price(),
-            'image_src' => $image_src ?? null,
-            'description' => $product->get_description(),
-            'short_description' => $product->get_short_description(),
-            'stock_status' => $product->get_stock_status(),
-            'has_person_types' => $product->has_person_types,
-            'addons' => $product->get_meta('_product_addons'),
-            'pricing' => $product->pricing,
-            'person_types' => $this->get_person_types_for_product($product),
-            'min_date' => [
-                'unit' => $product->min_date_unit,
-                'value' => $product->min_date_value,
-            ],
-            'max_date' => [
-                'unit' => $product->max_date_unit,
-                'value' => $product->max_date_value,
-            ],
             'yoast_head_json' => $yoast_head_json
         ];
 

@@ -100,13 +100,15 @@ class OrderService
         }
         $booking_status = $result['status'] ?? 'failed to get the status';
 
-        $this->contactService->notify_receiving_order(
-            'achchiraj@traveldesign.ma',
-            'New order Received',
-            $booking_status,
-            $result['customer_email'],
-            $result['orderId'],
-        );
+        if (defined('DEVELOPER_CONTACT')) {
+            $this->contactService->notify_receiving_order(
+                DEVELOPER_CONTACT,
+                'New order Received',
+                $booking_status,
+                $result['customer_email'],
+                $result['orderId'],
+            );
+        }
         return $result;
     }
 

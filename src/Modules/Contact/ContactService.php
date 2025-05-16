@@ -33,13 +33,14 @@ class ContactService
 
     public function notify_receiving_order($to, $subject, $order_status, $customer_email, $order_id)
     {
+        $from = defined("CONTACT_EMAIL") ? CONTACT_EMAIL : 'booking@fasttrackaero.com';
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
-            "From: booking@fasttrackaero.com"
+            "From: $from"
         ];
         $env = "prod";
 
-        if (defined("WP_ENVIRONMENT_TYPE") && WP_ENVIRONMENT_TYPE === 'local') {
+        if (is_development()) {
            return;
         }
 

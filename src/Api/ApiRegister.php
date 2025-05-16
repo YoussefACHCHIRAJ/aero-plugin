@@ -11,7 +11,6 @@ use Aero\Modules\Auth\AuthController;
 use Aero\Modules\Booking\BookingController;
 use Aero\Modules\City\CityController;
 use Aero\Modules\Contact\ContactController;
-use Aero\Modules\Dashboard\DashboardController;
 use Aero\Modules\Order\OrderController;
 use Aero\Modules\Payment\PaymentController;
 use Aero\Modules\Product\ProductController;
@@ -28,7 +27,6 @@ class ApiRegister
         ProductController::class,
         AuthController::class,
         ContactController::class,
-        DashboardController::class,
         RatingController::class
     ];
 

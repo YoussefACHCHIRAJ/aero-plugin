@@ -7,7 +7,6 @@ use Aero\Modules\Auth\AuthModule;
 use Aero\Modules\Booking\BookingModule;
 use Aero\Modules\City\CityModule;
 use Aero\Modules\Contact\ContactModule;
-use Aero\Modules\Dashboard\DashboardModule;
 use Aero\Modules\Order\OrderModule;
 use Aero\Modules\Payment\PaymentModule;
 use Aero\Modules\Product\ProductModule;
@@ -25,7 +24,6 @@ class Plugin
         ProductModule::class,
         AuthModule::class,
         ContactModule::class,
-        DashboardModule::class,
         RatingModule::class,
     ];
 

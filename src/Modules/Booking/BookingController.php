@@ -57,6 +57,9 @@ class BookingController
         }
     }
 
+    /**
+     * Test Endpoint
+     */
     public function say_hi_booking()
     {
         return 'Hi Booking';
