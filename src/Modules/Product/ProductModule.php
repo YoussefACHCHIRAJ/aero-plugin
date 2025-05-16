@@ -1,0 +1,15 @@
+<?php
+
+namespace Aero\Modules\Product;
+
+use Aero\Interfaces\AeroModuleInterface;
+
+class ProductModule implements AeroModuleInterface {
+
+    public static function register() {
+        container()->singleton(ProductController::class, ProductController::class);
+        container()->singleton(ProductService::class, ProductService::class);
+        container()->singleton(ProductHelper::class, ProductHelper::class);
+        container()->singleton(ProductDao::class, ProductDao::class);
+    }
+}
