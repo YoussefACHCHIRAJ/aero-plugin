@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Payment;
 
-use Aero\Interfaces\AeroModuleInterface;
+use Aero\Contracts\AeroModuleInterface;
 
 class PaymentModule implements AeroModuleInterface
 {

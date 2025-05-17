@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Rating;
 
-use Aero\Interfaces\AeroModuleInterface;
+use Aero\Contracts\AeroModuleInterface;
 
 class RatingModule implements AeroModuleInterface
 {

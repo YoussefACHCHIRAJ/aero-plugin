@@ -1,6 +1,6 @@
 <?php
 
-namespace Aero\Interfaces;
+namespace Aero\Contracts;
 
 interface AeroModuleInterface
 {

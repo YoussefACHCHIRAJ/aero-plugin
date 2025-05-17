@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Auth;
 
-use Aero\Interfaces\AeroModuleInterface;
+use Aero\Contracts\AeroModuleInterface;
 
 class AuthModule implements AeroModuleInterface {
 

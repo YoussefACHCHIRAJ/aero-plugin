@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Order;
 
-use Aero\Interfaces\AeroModuleInterface;
+use Aero\Contracts\AeroModuleInterface;
 
 class OrderModule implements AeroModuleInterface {
 

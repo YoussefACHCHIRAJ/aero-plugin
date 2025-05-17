@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\City;
 
-use Aero\Interfaces\AeroModuleInterface;
+use Aero\Contracts\AeroModuleInterface;
 
 class CityModule implements AeroModuleInterface
 {

@@ -3,7 +3,7 @@
 
 namespace Aero\Modules\Booking;
 
-use Aero\Interfaces\AeroModuleInterface;
+use Aero\Contracts\AeroModuleInterface;
 
 class BookingModule implements AeroModuleInterface
 {
