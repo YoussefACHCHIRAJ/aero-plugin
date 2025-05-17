@@ -16,22 +16,6 @@ class ProductController
 
     public function register_routes()
     {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'person-types', array(
-            'methods' => 'GET',
-            'callback' => [$this, 'get_person_types_data'],
-            'args' => [
-                'product_id' => [
-                    'required' => true,
-                    'validate_callback' => function ($param) {
-                        return is_numeric($param);
-                    }
-                ]
-            ],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
-
         register_rest_route(ApiConfig::AERO_NAMESPACE, 'products', array(
             'methods' => 'GET',
             'callback' => [$this, 'get_product_by_slug'],
@@ -57,13 +41,6 @@ class ProductController
         ));
     }
 
-    public function get_person_types_data(WP_REST_Request $request)
-    {
-        $result = $this->productService->get_person_types_data($request->get_param('product_id'));
-
-        return create_response($result, 'Persons type data');
-    }
-
     public function get_product_by_slug(WP_REST_Request $request)
     {
 
@@ -85,10 +62,4 @@ class ProductController
         return create_response($result, 'Product fetched by slug.');
     }
 
-    public function get_popular_products()
-    {
-        $result = $this->productService->get_popular_products();
-
-        return create_response($result, 'Popular product fetched.');
-    }
 }

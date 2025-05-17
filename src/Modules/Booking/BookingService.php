@@ -30,6 +30,12 @@ class BookingService
     {
         try {
 
+            $error_response  = validate_required_fields($data);
+
+            if ($error_response) {
+                return $error_response;
+            }
+
             if (!$this->cityHelper->validateCity($data['city'])) {
                 return new WP_Error('invalid_city', 'The given city is not yet supported', ['status' => 400]);
             }
@@ -86,7 +92,7 @@ class BookingService
         }
     }
 
-    public function createBookingForConnectionProduct(array $data): array | WP_Error
+    public function createConnectionBooking(array $data): array | WP_Error
     {
         try {
 

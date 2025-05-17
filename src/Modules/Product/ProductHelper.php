@@ -34,7 +34,7 @@ class ProductHelper
         return $product_data;
     }
 
-    
+
     public function get_related_products($exclude_ids = [], $limit = 10, $categories = [], $city = null)
     {
         if (!empty($city)) {
@@ -103,5 +103,30 @@ class ProductHelper
         }
 
         return $products;
+    }
+
+    public function extractPersonsFromProduct($personTypes)
+    {
+
+        $personTypes = [];
+        $personTypesIds = array_keys($personTypes);
+        
+        foreach ($personTypesIds as $id) {
+            $details = get_post($id);
+
+            if (!$details) {
+                continue;
+            }
+
+            $personData = (array) $details;
+            $metaData = get_post_meta($id);
+
+            if (! empty($metaData)) {
+                $personData['meta_data'] = $metaData;
+            }
+
+            $personTypes[$id] = $personData;
+        }
+        return $personTypes;
     }
 }

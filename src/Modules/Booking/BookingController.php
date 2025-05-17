@@ -39,17 +39,12 @@ class BookingController
         try {
 
             $data = $request->get_json_params();
-            //todo: convert this to use Factory Pattern later (when we convert this to a separate plugin) 
-            if ($data['serviceType'] === 'arrivalDeparture') {
-                $error_response  = validate_required_fields($data);
+            
+            $factory = new BookingFactory($this->bookingService);
 
-                if ($error_response) {
-                    return $error_response;
-                }
-                $result = $this->bookingService->createBooking($data);
-            } elseif ($data['serviceType'] === 'connection') {
-                $result = $this->bookingService->createBookingForConnectionProduct($data);
-            }
+            $handler = $factory->make($data['serviceType']);
+
+            $result = $handler->handle($data);
 
             return create_response($result, 'The booking has been saved and the order has been created', 201);
         } catch (\Throwable $th) {

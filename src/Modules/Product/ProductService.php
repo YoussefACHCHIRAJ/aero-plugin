@@ -24,44 +24,6 @@ class ProductService
     }
 
 
-    public function get_person_types_data($product_id)
-    {
-        $all_person_types = [];
-        if (!$product_id) {
-            return new WP_Error('Bad Request', 'The product id param is required.', ['status' => 400]);
-        }
-
-        $product = wc_get_product($product_id);
-
-        if (!$product) {
-            return new WP_Error('Bad Request', 'There is no product with the given id.', ['status' => 400]);
-        }
-
-        if (!$product->has_person_types) {
-            return new WP_Error('Bad Request', 'This product has no person types specified.', ['status' => 400]);
-        }
-
-        $person_types_ids = array_keys($product->person_types);
-
-        foreach ($person_types_ids as $person_type_id) {
-            $details = get_post($person_type_id);
-            $meta_data = get_post_meta($person_type_id);
-
-
-            if ($details) {
-                $all_person_types[$person_type_id] = (array) $details;
-
-                if ($meta_data) {
-                    $all_person_types[$person_type_id]['meta_data'] = $meta_data;
-                }
-            }
-        }
-
-        // Return the array of person types as a JSON response
-        return $all_person_types;
-    }
-
-
     public function get_product_by_slug($slug)
     {
 
@@ -111,19 +73,6 @@ class ProductService
         return $preparedService;
     }
 
-
-    public function get_popular_products()
-    {
-        $product_ids = $this->productDao->fetchProductsIdByTags("popular-product");
-        $products = [];
-
-        foreach ($product_ids as $id) {
-            $product = wc_get_product($id);
-            $products[] = $this->productHelper->prepare_base_product($product);
-        }
-
-        return $product;
-    }
 
     private function prepare_product_for_response(WC_Product $product)
     {
@@ -187,7 +136,7 @@ class ProductService
         return $product_data;
     }
 
-    private function get_person_types_for_product($product)
+    private function get_person_types_for_product(WC_Product $product)
     {
 
         $cache_key = 'person_types_' . $product->get_id();
@@ -197,26 +146,12 @@ class ProductService
             return $cached_person_types;
         }
 
-        $all_person_types = [];
-
         if (!$product->has_person_types) {
             return null;
         }
 
-        $person_types_ids = array_keys($product->person_types);
+        $all_person_types = $this->productHelper->extractPersonsFromProduct($product->person_types);
 
-        foreach ($person_types_ids as $person_type_id) {
-            $details = get_post($person_type_id);
-            $meta_data = get_post_meta($person_type_id);
-
-            if ($details) {
-                $all_person_types[$person_type_id] = (array) $details;
-
-                if ($meta_data) {
-                    $all_person_types[$person_type_id]['meta_data'] = $meta_data;
-                }
-            }
-        }
 
         wp_cache_set($cache_key, $all_person_types, 'person_types_group', 3600);
         return $all_person_types;
