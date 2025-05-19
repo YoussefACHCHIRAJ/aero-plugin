@@ -2,6 +2,7 @@
 
 namespace Aero\Modules\Order;
 
+use WC_Order;
 use WP_Error;
 
 class OrderHelper
@@ -128,7 +129,7 @@ class OrderHelper
         }
     }
 
-    public function calculate_booking_order_total($persons, $product_price, $transfer_cost, $has_persons, $porterPrice = 0, $order = null)
+    public function calculate_booking_order_total(array $persons, float $productPrice, float $transfer_cost, bool $has_persons, float $porterPrice = 0, WC_Order|null $order = null)
     {
         $amount = 0;
 
@@ -142,34 +143,15 @@ class OrderHelper
 
         // Handle case where persons are an array (record of objects)
         if ($has_persons && is_array($persons)) {
-            foreach ($persons as $key => $person) {
-                if (isset($person['count']) && isset($person['cost'])) {
-                    $cost = is_numeric($person['cost']) ? $person['cost'] : $product_price;
-                    $count = is_numeric($person['count']) ? $person['count'] : 1;
-
-                    if ($count < 0) {
-                        if ($order) {
-                            $order->add_order_note("Person $key has an invalid count of $count. Skipping.");
-                        }
-                        continue;
-                    }
-
-                    $amount += $count * $cost;
-                } else {
-                    if ($order) {
-                        $order->add_order_note("Person $key is missing required fields (count or cost). Skipping.");
-                    }
-                    continue;
-                }
-            }
+            $amount = self::calculatePersonsTotal($persons, $order, $productPrice);
         } elseif (!$has_persons && is_numeric($persons)) {
-            if ($persons >= 1) {
-                $amount = $persons * $product_price;
-            } else {
+            if ($persons <= 0) {
                 if ($order) {
                     $order->add_order_note("Invalid number of persons: $persons. defaulting to 1.");
                 }
-                $amount = $product_price;
+                $amount = $productPrice;
+            } else {
+                $amount = $persons * $productPrice;
             }
         } else {
             if ($order) {
@@ -179,6 +161,28 @@ class OrderHelper
         }
 
         return $amount + $transfer_cost + $porterPrice;
+    }
+
+    private static function calculatePersonsTotal(array $persons, WC_Order $order, float $productPrice): float
+    {
+
+        $total = 0;
+
+        foreach ($persons as $person) {
+            if (!isset($person['count']) || !isset($person['cost'])) {
+                if ($order) {
+                    $order->add_order_note("Person is missing required fields (count or cost). Stopping calculation.");
+                }
+                return 0;
+            }
+
+            $cost = is_numeric($person['cost']) ? (float)$person['cost'] : $productPrice;
+            $count = is_numeric($person['count']) ? (int)$person['count'] : 0;
+
+            $total += (float) ($count * $cost);
+        }
+
+        return $total;
     }
 
     public function get_orders_count_by_platform($platform_value = 'Web Site', $include_orders_without_meta = false)

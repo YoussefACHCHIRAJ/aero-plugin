@@ -13,6 +13,6 @@ class ArrivalDepartureHandler implements BookingHandlerConcert {
     }
     
     public function handle(array $data) {
-        return $this->bookingService->createBooking($data);
+        return $this->bookingService->create($data);
     }
 }

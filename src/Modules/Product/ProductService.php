@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Product;
 
-use Aero\Modules\City\CityDao;
+use Aero\Modules\City\CityRepository;
 use Aero\Modules\City\CityHelper;
 use WC_Product;
 use WP_Error;
@@ -11,16 +11,16 @@ use Yoast\WP\SEO\Surfaces\Meta_Surface;
 class ProductService
 {
     protected $productHelper;
-    protected $cityDao;
+    protected $cityRepository;
     protected $cityHelper;
-    protected $productDao;
+    protected $productRepository;
 
-    public function __construct(CityHelper $cityHelper, ProductHelper $productHelper, CityDao $cityDao, ProductDao $productDao)
+    public function __construct(CityHelper $cityHelper, ProductHelper $productHelper, CityRepository $cityRepository, ProductRepository $productRepository)
     {
         $this->cityHelper =  $cityHelper;
         $this->productHelper = $productHelper;
-        $this->cityDao = $cityDao;
-        $this->productDao = $productDao;
+        $this->cityRepository = $cityRepository;
+        $this->productRepository = $productRepository;
     }
 
 
@@ -31,7 +31,7 @@ class ProductService
             return new WP_Error('Bad Request', 'The product slug param is required.', ['status' => 400]);
         }
 
-        $productId = $this->productDao->fetchProductIdBySlug($slug);
+        $productId = $this->productRepository->fetchProductIdBySlug($slug);
         $product = wc_get_product($productId);
 
         if (!$product) {
@@ -52,14 +52,14 @@ class ProductService
             return new WP_Error('Bad Request', 'The serviceSlug slug param is required.', ['status' => 400]);
         }
 
-        $productId = $this->productDao->fetchProductIdBySlug($serviceSlug);
+        $productId = $this->productRepository->fetchProductIdBySlug($serviceSlug);
         $service = wc_get_product($productId);
 
         if (!$service) {
             return new WP_Error('Not Found', 'The service not exist or you may misspelled.', ['status' => 404]);
         }
 
-        $cityTerm = $this->cityDao->fetchBySlug($citySlug);
+        $cityTerm = $this->cityRepository->fetchBySlug($citySlug);
 
         if (!$cityTerm) {
             return new WP_Error('Not Found', 'The city not exist or you may misspelled.', ['status' => 404]);

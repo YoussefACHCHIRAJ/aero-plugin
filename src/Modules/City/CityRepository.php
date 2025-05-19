@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\City;
 
-class CityDao
+class CityRepository
 {
 
     public function fetchBySlug(string $slug)
@@ -34,5 +34,19 @@ class CityDao
     ";
 
         return $wpdb->get_results($wpdb->prepare($query, 'uncategorized'));
+    }
+
+    public static function fetchCitiesName()
+    {
+        global $wpdb;
+
+        $query = "
+        SELECT t.name
+        FROM {$wpdb->terms} t
+        INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = t.term_id
+        WHERE tt.taxonomy = 'product_cat'
+        AND t.slug != %s
+    ";
+        return $wpdb->get_col($wpdb->prepare($query, 'uncategorized'));
     }
 }

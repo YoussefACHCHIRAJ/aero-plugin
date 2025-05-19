@@ -9,7 +9,7 @@ class OrderModule implements AeroModuleInterface {
     public static function register() {
         container()->singleton(OrderService::class, OrderService::class);
         container()->singleton(OrderController::class, OrderController::class);
-        container()->singleton(OrderDao::class, OrderDao::class);
+        container()->singleton(OrderRepository::class, OrderRepository::class);
         container()->singleton(OrderHelper::class, OrderHelper::class);
     }
 }

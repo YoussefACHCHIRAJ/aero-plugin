@@ -3,26 +3,26 @@
 
 namespace Aero\Modules\City;
 
-use Aero\Modules\Product\ProductDao;
+use Aero\Modules\Product\ProductRepository;
 use WP_Error;
 use Yoast\WP\SEO\Surfaces\Meta_Surface;
 
 class CityService
 {
     protected $cityHelper;
-    protected $cityDao;
-    protected $productDao;
+    protected $cityRepository;
+    protected $productRepository;
 
-    public function __construct(CityHelper $cityHelper, CityDao $cityDao, ProductDao $productDao)
+    public function __construct(CityHelper $cityHelper, CityRepository $cityRepository, ProductRepository $productRepository)
     {
         $this->cityHelper = $cityHelper;
-        $this->cityDao = $cityDao;
-        $this->productDao = $productDao;
+        $this->cityRepository = $cityRepository;
+        $this->productRepository = $productRepository;
     }
 
     public function fetchCities()
     {
-        $terms = $this->cityDao->fetchAll();
+        $terms = $this->cityRepository->fetchAll();
 
         if (!$terms || sizeof($terms) < 1) {
             return [];
@@ -38,7 +38,7 @@ class CityService
     public function fetchCity(string $slug)
     {
 
-        $term = $this->cityDao->fetchBySlug($slug);
+        $term = $this->cityRepository->fetchBySlug($slug);
 
 
         if (!$term) {
@@ -46,7 +46,7 @@ class CityService
         }
 
         // Query to fetch products associated with the category
-        $products = $this->productDao->fetchProductsByCityId($term->term_id);
+        $products = $this->productRepository->fetchProductsByCityId($term->term_id);
 
         foreach ($products as $product) {
             $thumbnail_id = get_post_thumbnail_id($product->id);
