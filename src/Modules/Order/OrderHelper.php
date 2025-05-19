@@ -129,50 +129,44 @@ class OrderHelper
         }
     }
 
-    public function calculate_booking_order_total(array $persons, float $productPrice, float $transfer_cost, bool $has_persons, float $porterPrice = 0, WC_Order|null $order = null)
+    public function calculate_booking_order_total(array $persons, float $productPrice, float $transfer_cost, bool $hasPersons, float $porterPrice = 0, WC_Order $order = null)
     {
         $amount = 0;
 
         // Validate transfer cost
         if (!is_numeric($transfer_cost)) {
             $transfer_cost = 0;
-            if ($order) {
-                $order->add_order_note("Invalid transfer cost provided. Defaulting to 0.");
-            }
+            $order->add_order_note("Invalid transfer cost provided. Defaulting to 0.");
+        }
+
+        if ($hasPersons && !is_array($persons)) {
+            $order->add_order_note("Invalid persons data structure.");
+            return 0;
         }
 
         // Handle case where persons are an array (record of objects)
-        if ($has_persons && is_array($persons)) {
-            $amount = self::calculatePersonsTotal($persons, $order, $productPrice);
-        } elseif (!$has_persons && is_numeric($persons)) {
-            if ($persons <= 0) {
-                if ($order) {
-                    $order->add_order_note("Invalid number of persons: $persons. defaulting to 1.");
-                }
-                $amount = $productPrice;
-            } else {
-                $amount = $persons * $productPrice;
-            }
-        } else {
-            if ($order) {
-                $order->add_order_note("Invalid persons data structure.");
-            }
-            return 0;
-        }
+        $amount = self::calculatePersonsTotal($persons, $order, $productPrice, $hasPersons);
 
         return $amount + $transfer_cost + $porterPrice;
     }
 
-    private static function calculatePersonsTotal(array $persons, WC_Order $order, float $productPrice): float
+    private static function calculatePersonsTotal(array $persons, WC_Order $order, float $productPrice, bool $hasPersons): float
     {
 
         $total = 0;
 
+        if (!$hasPersons && is_numeric($persons)) {
+            if ($persons <= 0) {
+                $order->add_order_note("Invalid number of persons: $persons. defaulting to 1.");
+                return $productPrice;
+            }
+
+            return $persons * $productPrice;
+        }
+
         foreach ($persons as $person) {
             if (!isset($person['count']) || !isset($person['cost'])) {
-                if ($order) {
-                    $order->add_order_note("Person is missing required fields (count or cost). Stopping calculation.");
-                }
+                $order->add_order_note("Person is missing required fields (count or cost). Stopping calculation.");
                 return 0;
             }
 
