@@ -13,6 +13,6 @@ class ConnectionHandler implements BookingHandlerConcert {
     }
     
     public function handle(array $data) {
-        return $this->bookingService->createConnectionBooking($data);
+        return $this->bookingService->create($data);
     }
 }

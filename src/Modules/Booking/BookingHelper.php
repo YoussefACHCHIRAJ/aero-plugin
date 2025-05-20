@@ -2,26 +2,33 @@
 
 namespace Aero\Modules\Booking;
 
+use InvalidArgumentException;
+use WC_Booking;
+use WC_Product;
+
 class BookingHelper
 {
-    function create_persons($product, $persons_data)
+    function createPersons(WC_Product $product, array|int $persons)
     {
         if ($product->has_person_types) {
-            foreach ($persons_data as $id => $person) {
+            foreach ($persons as $id => $person) {
                 $persons[$id] = $person['count'];
             }
-        } else {
-            if (isset($persons_data)) {
-                $persons = $persons_data;
-            }
+
+            return $persons;
         }
-        return $persons;
+
+        if (is_numeric($persons)) {
+            return $persons;
+        }
+
+        throw new \InvalidArgumentException("Persons are missing or in incorrect format.", 400);
     }
 
-    function create_booking($start_date, $persons, $item_line, $product)
+    function createBooking(string $start_date, array|int $persons, int $orderItem, WC_Product $product): WC_Booking
     {
         $start_date_timestamp = strtotime(date('Y-m-d', strtotime($start_date)));
-        
+
 
 
         $booking_data = [
@@ -29,8 +36,14 @@ class BookingHelper
             'all_day' => 1,
             'customer_id' => 0,
             'person_counts' => $persons,
-            'order_item_id' => $item_line,
+            'order_item_id' => $orderItem,
         ];
-        return create_wc_booking($product->get_id(), $booking_data, 'unpaid', true);
+        $bookingItem = create_wc_booking($product->get_id(), $booking_data, 'unpaid', true);
+
+        if (!$bookingItem) {
+            throw new InvalidArgumentException('Product with id ' . $product->get_id() . ' does not saved. Order has been cancelled',  '500');
+        }
+
+        return $bookingItem;
     }
 }

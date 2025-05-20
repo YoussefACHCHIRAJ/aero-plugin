@@ -2,11 +2,14 @@
 
 namespace Aero\Modules\Order;
 
+use BookingTypeEnum;
+use InvalidArgumentException;
+use WC_Order;
 use WP_Error;
 
 class OrderHelper
 {
-    private function create_order_meta_section($prefix, $data, $includeTransfer = false)
+    public static function create_order_meta_section($prefix, $data, $includeTransfer = false)
     {
         $meta_data = [
             "{$prefix} Time" => $data['time'],
@@ -128,57 +131,87 @@ class OrderHelper
         }
     }
 
-    public function calculate_booking_order_total($persons, $product_price, $transfer_cost, $has_persons, $porterPrice = 0, $order = null)
+    public function calculateTotalPrice(array $data, bool $hasPersonsTypes, WC_Order $order)
+    {
+
+        $isConnection = BookingTypeEnum::isConnection($data['serviceType']);
+
+        $transferPrice = (float) $data['transfer']['price'] ?? 0;
+        $porterPrice = (float) $data['porter']['price'] ?? 0;
+
+        if ($isConnection) {
+            $transferPrice = (float) ($data['departure']['transfer']['price'] ?? 0) + ($data['arrival']['transfer']['price'] ?? 0);
+            $porterPrice = (float) $data['arrival']['porter']['price'] + $data['departure']['porter']['price'];
+        }
+
+        $total = $this->calculateBookingOrderTotal(
+            $data['persons'],
+            $data['productPrice'],
+            $transferPrice,
+            $hasPersonsTypes,
+            $porterPrice,
+            $order
+        );
+
+        if ($total <= 0) {
+            wp_delete_post($order->get_id(), true);
+            throw new \InvalidArgumentException('Failed to calculate the total of the order.', '500');
+        }
+
+        return $total;
+    }
+    public function calculateBookingOrderTotal(array|int $persons, float $productPrice, float $transfer_cost, bool $hasPersons, float $porterPrice = 0, WC_Order $order)
     {
         $amount = 0;
 
         // Validate transfer cost
         if (!is_numeric($transfer_cost)) {
             $transfer_cost = 0;
-            if ($order) {
-                $order->add_order_note("Invalid transfer cost provided. Defaulting to 0.");
-            }
+            $order->add_order_note("Invalid transfer cost provided. Defaulting to 0.");
+        }
+
+        if ($hasPersons && !is_array($persons)) {
+            $order->add_order_note("Invalid persons data structure.");
+            throw new InvalidArgumentException('Failed to calculate Persons Costs due to invalid format.', 400);
         }
 
         // Handle case where persons are an array (record of objects)
-        if ($has_persons && is_array($persons)) {
-            foreach ($persons as $key => $person) {
-                if (isset($person['count']) && isset($person['cost'])) {
-                    $cost = is_numeric($person['cost']) ? $person['cost'] : $product_price;
-                    $count = is_numeric($person['count']) ? $person['count'] : 1;
-
-                    if ($count < 0) {
-                        if ($order) {
-                            $order->add_order_note("Person $key has an invalid count of $count. Skipping.");
-                        }
-                        continue;
-                    }
-
-                    $amount += $count * $cost;
-                } else {
-                    if ($order) {
-                        $order->add_order_note("Person $key is missing required fields (count or cost). Skipping.");
-                    }
-                    continue;
-                }
-            }
-        } elseif (!$has_persons && is_numeric($persons)) {
-            if ($persons >= 1) {
-                $amount = $persons * $product_price;
-            } else {
-                if ($order) {
-                    $order->add_order_note("Invalid number of persons: $persons. defaulting to 1.");
-                }
-                $amount = $product_price;
-            }
-        } else {
-            if ($order) {
-                $order->add_order_note("Invalid persons data structure.");
-            }
-            return 0;
-        }
+        $amount = self::calculatePersonsCosts($persons, $order, $productPrice, $hasPersons);
 
         return $amount + $transfer_cost + $porterPrice;
+    }
+
+    private static function calculatePersonsCosts(array|int $persons, WC_Order $order, float $productPrice, bool $hasPersons): float
+    {
+
+        $total = 0;
+
+        if (!$hasPersons && is_numeric($persons)) {
+            if ($persons <= 0) {
+                $order->add_order_note("Invalid number of persons: $persons. defaulting to 1.");
+                return $productPrice;
+            }
+
+            return $persons * $productPrice;
+        }
+
+        foreach ($persons as $person) {
+            if (!isset($person['count']) || !isset($person['cost'])) {
+                $order->add_order_note("Person is missing required fields (count or cost). Stopping calculation.");
+                return 0;
+            }
+
+            $cost = is_numeric($person['cost']) ? (float)$person['cost'] : $productPrice;
+            $count = is_numeric($person['count']) ? (int)$person['count'] : 0;
+
+            $total += (float) ($count * $cost);
+        }
+
+        if($total <= 0) {
+            throw new InvalidArgumentException('Failed to calculate Persons Costs due to invalid format.', 400);
+        }
+
+        return $total;
     }
 
     public function get_orders_count_by_platform($platform_value = 'Web Site', $include_orders_without_meta = false)

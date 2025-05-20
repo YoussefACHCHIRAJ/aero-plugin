@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Order;
 
-class OrderDao
+class OrderRepository
 {
 
     public function fetchOrderByIdAndEmail(string $id, string $email)

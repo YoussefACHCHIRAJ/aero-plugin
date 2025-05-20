@@ -10,6 +10,6 @@ class ProductModule implements AeroModuleInterface {
         container()->singleton(ProductController::class, ProductController::class);
         container()->singleton(ProductService::class, ProductService::class);
         container()->singleton(ProductHelper::class, ProductHelper::class);
-        container()->singleton(ProductDao::class, ProductDao::class);
+        container()->singleton(ProductRepository::class, ProductRepository::class);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Auth;
 
-use Aero\Config\ApiConfig;
+use Aero\Helpers\AeroRouter;
 use WP_Error;
 use WP_REST_Request;
 
@@ -10,26 +10,16 @@ class AuthController
 {
     protected $authService;
 
-    public function __construct(AuthService $authService) {
+    public function __construct(AuthService $authService)
+    {
         $this->authService = $authService;
     }
 
-    public function register_routes() {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'auth/register', array(
-            'methods' => 'POST',
-            'callback' => [$this, 'wc_register_customer'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+    public function register_routes()
+    {
+        AeroRouter::post('auth/register', [$this, 'wc_register_customer']);
 
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'auth/login', array(
-            'methods' => 'POST',
-            'callback' => [$this, 'wc_login_customer'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::post('auth/login', [$this, 'wc_login_customer']);
     }
 
     public function wc_login_customer(WP_REST_Request $request)

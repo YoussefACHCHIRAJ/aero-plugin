@@ -4,6 +4,7 @@
 namespace Aero\Modules\City;
 
 use Aero\Config\ApiConfig;
+use Aero\Helpers\AeroRouter;
 use WP_Error;
 use WP_REST_Request;
 
@@ -19,29 +20,15 @@ class CityController
 
     public function register_routes()
     {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'cities', array(
-            'methods' => 'GET',
-            'callback' => [$this, 'fetchCities'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
-
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'city', array(
-            'methods' => 'GET',
-            'callback' => [$this, 'fetchCity'],
-            'args' => [
-                'slug' => [
-                    'required' => true,
-                    'validate_callback' => function ($param) {
-                        return is_string($param);
-                    }
-                ]
-            ],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::get('cities', [$this, 'fetchCities']);
+        AeroRouter::get('city', [$this, 'fetchCity'], null, [
+            'slug' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_string($param);
+                }
+            ]
+        ]);
     }
 
     public function fetchCities()

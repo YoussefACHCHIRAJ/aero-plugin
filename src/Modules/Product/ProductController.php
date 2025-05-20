@@ -3,6 +3,7 @@
 namespace Aero\Modules\Product;
 
 use Aero\Config\ApiConfig;
+use Aero\Helpers\AeroRouter;
 use WP_REST_Request;
 
 class ProductController
@@ -16,29 +17,16 @@ class ProductController
 
     public function register_routes()
     {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'products', array(
-            'methods' => 'GET',
-            'callback' => [$this, 'get_product_by_slug'],
-            'args' => [
-                'slug' => [
-                    'required' => true,
-                    'validate_callback' => function ($param) {
-                        return is_string($param);
-                    }
-                ]
-            ],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::get('products', [$this, 'get_product_by_slug'], null, [
+            'slug' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_string($param);
+                }
+            ]
+        ]);
 
-        register_rest_route(ApiConfig::AERO_NAMESPACE, '/city/(?P<citySlug>[a-zA-Z0-9-]+)/(?P<serviceSlug>[a-zA-Z0-9-]+)', array(
-            'methods' => 'GET',
-            'callback' => [$this, 'get_city_service_by_slug'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::get('/city/(?P<citySlug>[a-zA-Z0-9-]+)/(?P<serviceSlug>[a-zA-Z0-9-]+)', [$this, 'get_city_service_by_slug']);
     }
 
     public function get_product_by_slug(WP_REST_Request $request)
@@ -61,5 +49,4 @@ class ProductController
 
         return create_response($result, 'Product fetched by slug.');
     }
-
 }

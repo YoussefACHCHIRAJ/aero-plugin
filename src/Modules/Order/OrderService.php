@@ -3,12 +3,14 @@
 namespace Aero\Modules\Order;
 
 use Aero\Modules\Contact\ContactService;
+use Aero\Modules\Order\Handlers\OrderMetaWriterFactory;
 use Automattic\WooCommerce\Utilities\NumberUtil;
 use WC_Order;
 use WC_Order_Item_Coupon;
 use WC_Order_Refund;
 use WC_Product;
 use WP_Error;
+use WPMailSMTP\Vendor\Aws\Arn\Exception\InvalidArnException;
 
 class OrderService
 {
@@ -21,7 +23,13 @@ class OrderService
         $this->contactService = $contactService;
     }
 
-    public function createOrder(array $data)
+    /**
+     * Create Woo Order for the booking
+     * @param string passengerName
+     * 
+     * @return \WC_Order|\WP_Error $order
+     */
+    public function createOrder(string $passengerName)
     {
         $order = wc_create_order([
             'customer_id' => 0,
@@ -29,7 +37,7 @@ class OrderService
         ]);
 
         $address = [
-            'first_name' => $data['passengerName'],
+            'first_name' => $passengerName,
         ];
 
         $order->set_billing($address);
@@ -39,45 +47,31 @@ class OrderService
         return $order;
     }
 
-    public function createOrderItem(WC_Order $order, WC_Product $product, array $data, bool $isConnection = false)
+    /**
+     * Create the order Item for the booking
+     */
+    public function createOrderItem(WC_Order $order, WC_Product $product, array $data)
     {
-        $transfer_price = $data['transfer']['price'] ?? 0;
-        $porter_price = $data['porter']['price'];
-
-        if ($isConnection) {
-            $transfer_price = ($data['departure']['transfer']['price'] ?? 0) + ($data['arrival']['transfer']['price'] ?? 0);
-            $porter_price = $data['arrival']['porter']['price'] + $data['departure']['porter']['price'];
-        }
-        $total = $this->orderHelpers->calculate_booking_order_total(
-            $data['persons'],
-            $data['productPrice'],
-            $transfer_price,
+        $total = $this->orderHelpers->calculateTotalPrice(
+            $data,
             $product->has_person_types,
-            $porter_price,
             $order
         );
 
-        if ($total <= 0) {
-            wp_delete_post($order->get_id(), true);
-            return new WP_Error("Failed", 'Failed to calculate the total of the order.', ['status' => '500']);
-        }
-
-        $item_line = $order->add_product($product, 1, [
+        $orderItem = $order->add_product($product, 1, [
             'total' => $total,
         ]);
 
-        if (!$item_line) {
+        if (!$orderItem) {
             wp_delete_post($order->get_id(), true);
-            return new WP_Error("Failed", 'Failed to add product with the id: ' . $product->get_id() . ' to the order.', ['status' => '400']);
+            throw new InvalidArnException('Failed to add product with the id: ' . $product->get_id() . ' to the order.', '400');
         }
 
+        $handler = OrderMetaWriterFactory::make($data['serviceType']);
 
-        if ($isConnection) {
-            $this->orderHelpers->create_connection_order_item_meta($item_line, $data);
-        } else {
-            $this->orderHelpers->create_order_item_meta($item_line, $data);
-        }
-        return $item_line;
+        $handler->writeMetaItem($orderItem, $data);
+
+        return $orderItem;
     }
 
     public function get_order_meta_by_id(array $data): mixed

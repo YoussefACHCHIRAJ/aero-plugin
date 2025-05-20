@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Booking;
 
-use Aero\Config\ApiConfig;
+use Aero\Helpers\AeroRouter;
 use Aero\Modules\Booking\BookingService;
 use WP_Error;
 use WP_REST_Request;
@@ -19,44 +19,19 @@ class BookingController
 
     public function register_routes()
     {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'booking', array(
-            'methods' => 'POST',
-            'callback' => [$this, 'save_booking'],
-            'permission_callback' => fn() => current_user_can('administrator'),
-        ));
-
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'hi-booking', array(
-            'methods' => 'GET',
-            'callback' => [$this, 'say_hi_booking'],
-            'permission_callback' => fn() => current_user_can('administrator'),
-        ));
+        AeroRouter::post('booking', [$this, 'create']);
     }
 
-    public function save_booking(WP_REST_Request $request)
+    public function create(WP_REST_Request $request)
     {
-
-
         try {
-
             $data = $request->get_json_params();
-            
-            $factory = new BookingFactory($this->bookingService);
 
-            $handler = $factory->make($data['serviceType']);
-
-            $result = $handler->handle($data);
+            $result = $this->bookingService->create($data);
 
             return create_response($result, 'The booking has been saved and the order has been created', 201);
         } catch (\Throwable $th) {
             return new WP_Error('server_error', 'something is going wrong', ['status' => 500, 'details' => $th->getMessage()]);
         }
-    }
-
-    /**
-     * Test Endpoint
-     */
-    public function say_hi_booking()
-    {
-        return 'Hi Booking';
     }
 }

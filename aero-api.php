@@ -17,6 +17,7 @@ require __DIR__ . '/src/Autoloader.php';
 require __DIR__ . '/src/utils.php';
 require __DIR__ . '/src/Helpers/helpers.php';
 require __DIR__ . '/Plugin.php';
+require __DIR__ . '/src/Modules/Booking/Enums/BookingTypeEnum.php';
 
 
 

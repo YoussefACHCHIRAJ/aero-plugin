@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Product;
 
-class ProductDao
+class ProductRepository
 {
     public function fetchProductsByCityId($cityId)
     {
