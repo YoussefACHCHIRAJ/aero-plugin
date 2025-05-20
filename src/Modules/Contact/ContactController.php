@@ -3,6 +3,7 @@
 namespace Aero\Modules\Contact;
 
 use Aero\Config\ApiConfig;
+use Aero\Helpers\AeroRouter;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -17,13 +18,7 @@ class ContactController
     }
 
     public function register_routes() {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'contact', array(
-            'methods' => 'POST',
-            'callback' => [$this, 'handle_contact_form'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::post('contact', [$this, 'handle_contact_form']);
     }
 
     public function handle_contact_form(WP_REST_Request $request)

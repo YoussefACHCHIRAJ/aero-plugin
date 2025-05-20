@@ -2,12 +2,14 @@
 
 namespace Aero\Modules\Order;
 
+use BookingTypeEnum;
+use InvalidArgumentException;
 use WC_Order;
 use WP_Error;
 
 class OrderHelper
 {
-    private function create_order_meta_section($prefix, $data, $includeTransfer = false)
+    public static function create_order_meta_section($prefix, $data, $includeTransfer = false)
     {
         $meta_data = [
             "{$prefix} Time" => $data['time'],
@@ -129,7 +131,36 @@ class OrderHelper
         }
     }
 
-    public function calculate_booking_order_total(array $persons, float $productPrice, float $transfer_cost, bool $hasPersons, float $porterPrice = 0, WC_Order $order = null)
+    public function calculateTotalPrice(array $data, bool $hasPersonsTypes, WC_Order $order)
+    {
+
+        $isConnection = BookingTypeEnum::isConnection($data['serviceType']);
+
+        $transferPrice = (float) $data['transfer']['price'] ?? 0;
+        $porterPrice = (float) $data['porter']['price'] ?? 0;
+
+        if ($isConnection) {
+            $transferPrice = (float) ($data['departure']['transfer']['price'] ?? 0) + ($data['arrival']['transfer']['price'] ?? 0);
+            $porterPrice = (float) $data['arrival']['porter']['price'] + $data['departure']['porter']['price'];
+        }
+
+        $total = $this->calculateBookingOrderTotal(
+            $data['persons'],
+            $data['productPrice'],
+            $transferPrice,
+            $hasPersonsTypes,
+            $porterPrice,
+            $order
+        );
+
+        if ($total <= 0) {
+            wp_delete_post($order->get_id(), true);
+            throw new \InvalidArgumentException('Failed to calculate the total of the order.', '500');
+        }
+
+        return $total;
+    }
+    public function calculateBookingOrderTotal(array|int $persons, float $productPrice, float $transfer_cost, bool $hasPersons, float $porterPrice = 0, WC_Order $order)
     {
         $amount = 0;
 
@@ -141,16 +172,16 @@ class OrderHelper
 
         if ($hasPersons && !is_array($persons)) {
             $order->add_order_note("Invalid persons data structure.");
-            return 0;
+            throw new InvalidArgumentException('Failed to calculate Persons Costs due to invalid format.', 400);
         }
 
         // Handle case where persons are an array (record of objects)
-        $amount = self::calculatePersonsTotal($persons, $order, $productPrice, $hasPersons);
+        $amount = self::calculatePersonsCosts($persons, $order, $productPrice, $hasPersons);
 
         return $amount + $transfer_cost + $porterPrice;
     }
 
-    private static function calculatePersonsTotal(array $persons, WC_Order $order, float $productPrice, bool $hasPersons): float
+    private static function calculatePersonsCosts(array|int $persons, WC_Order $order, float $productPrice, bool $hasPersons): float
     {
 
         $total = 0;
@@ -174,6 +205,10 @@ class OrderHelper
             $count = is_numeric($person['count']) ? (int)$person['count'] : 0;
 
             $total += (float) ($count * $cost);
+        }
+
+        if($total <= 0) {
+            throw new InvalidArgumentException('Failed to calculate Persons Costs due to invalid format.', 400);
         }
 
         return $total;

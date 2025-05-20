@@ -4,6 +4,7 @@
 namespace Aero\Modules\Rating;
 
 use Aero\Config\ApiConfig;
+use Aero\Helpers\AeroRouter;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -12,13 +13,7 @@ class RatingController
 
     public function register_routes()
     {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'rating', array(
-            'methods' => 'POST',
-            'callback' => [$this, 'notify_receiving_rating'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::post('rating', [$this, 'notify_receiving_rating']);
     }
     public function notify_receiving_rating(WP_REST_Request $request)
     {

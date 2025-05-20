@@ -2,8 +2,7 @@
 
 namespace Aero\Modules\Order;
 
-
-use Aero\Config\ApiConfig;
+use Aero\Helpers\AeroRouter;
 use WP_Error;
 use WP_REST_Request;
 
@@ -16,54 +15,24 @@ class OrderController
         $this->orderServices = $orderServices;
     }
 
-    public function register_routes() {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'order/update-status', array(
-            'methods' => 'PUT',
-            'callback' => [$this, 'update_order_status'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'order-meta', array(
-            'methods' => 'POST',
-            'callback' => [$this, 'get_order_meta_by_id'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+    public function register_routes()
+    {
+        AeroRouter::put('order/update-status', [$this, 'update_order_status']);
 
+        AeroRouter::post('order-meta', [$this, 'get_order_meta_by_id']);
 
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'orders/insights', array(
-            'methods' => 'GET',
-            'callback' => [$this, 'fetch_orders_insights'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::get('orders/insights', [$this, 'fetch_orders_insights']);
 
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'orders/billing', array(
-            'methods' => 'PUT',
-            'callback' => [$this, 'save_order_billing'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::put('orders/billing', [$this, 'save_order_billing']);
 
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'orders/find-my-order/(?P<orderId>[0-9-]+)', array(
-            'methods' => 'GET',
-            'callback' => [$this, 'find_my_order'],
-            'args' => [
-                'email' => [
-                    'required' => true,
-                    'validate_callback' => function ($param) {
-                        return is_string($param);
-                    }
-                ]
-            ],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::get('orders/find-my-order/(?P<orderId>[0-9-]+)', [$this, 'find_my_order'], null, [
+            'email' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_string($param);
+                }
+            ]
+        ]);
     }
 
     public function get_order_meta_by_id(WP_REST_Request $request)

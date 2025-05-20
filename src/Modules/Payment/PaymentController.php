@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Payment;
 
-use Aero\Config\ApiConfig;
+use Aero\Helpers\AeroRouter;
 use Aero\Modules\Order\OrderHelper;
 use WP_REST_Request;
 
@@ -20,24 +20,9 @@ class PaymentController
 
     public function register_routes()
     {
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'set-paypal-orderId', array(
-            'methods' => 'POST',
-            'callback' => [$this, 'link_order_with_paypal_id'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
 
-
-
-
-        register_rest_route(ApiConfig::AERO_NAMESPACE, 'validate-payment-order', array(
-            'methods' => 'POST',
-            'callback' => [$this, 'validate_payment_order'],
-            'permission_callback' => function () {
-                return current_user_can('administrator');
-            },
-        ));
+        AeroRouter::post('set-paypal-orderId', [$this, 'link_order_with_paypal_id']);
+        AeroRouter::post('validate-payment-order', [$this, 'validate_payment_order']);
     }
 
 
