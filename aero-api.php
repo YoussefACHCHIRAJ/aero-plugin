@@ -9,11 +9,9 @@
 */
 
 
-if (!defined("AERO_PLUGIN_FILE")) {
-    define("AERO_PLUGIN_FILE", __FILE__);
-}
-
 require __DIR__ . '/src/Autoloader.php';
+require __DIR__ . '/Plugin.php';
+require __DIR__ . '/helpers.php';
 
 if (! \Aero\Autoloader::init()) {
     return;

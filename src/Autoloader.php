@@ -20,9 +20,10 @@ class Autoloader
      */
     public static function init()
     {
-        $autoloader = dirname(__DIR__) . '/vender/autoloader_packages.php';
+        $autoloader = dirname(__DIR__) . '/vendor/autoload.php';
 
         if (!is_readable($autoloader)) {
+            error_log("Not found File: $autoloader");
             self::missingAutoloader();
             return false;
         }
@@ -42,10 +43,7 @@ class Autoloader
     protected static function missingAutoloader()
     {
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            // This message is not translated as at this point it's too early to load translations.
-            error_log(  // phpcs:ignore
-                esc_html('Your installation of Aero Plugin is incomplete.')
-            );
+            error_log('Your installation of Aero Plugin is incomplete.');
         }
         add_action(
             'admin_notices',

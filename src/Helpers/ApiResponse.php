@@ -2,6 +2,7 @@
 
 namespace Aero\Helpers;
 
+use WP_Error;
 use WP_REST_Response;
 
 class ApiResponse
@@ -14,7 +15,7 @@ class ApiResponse
         ], $status);
     }
 
-    public static function build($data, string $message, int $statusCode = 200): WP_REST_Response
+    public static function build($data, string $message, int $statusCode = 200): WP_REST_Response| WP_Error
     {
         if (is_wp_error($data)) {
             return $data;

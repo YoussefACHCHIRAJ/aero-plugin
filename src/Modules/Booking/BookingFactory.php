@@ -2,10 +2,10 @@
 
 namespace Aero\Modules\Booking;
 
+use Aero\Modules\Booking\Enums\BookingTypeEnum;
 use Aero\Modules\Booking\Handlers\ArrivalDepartureHandler;
 use Aero\Modules\Booking\Handlers\BookingHandlerConcert;
 use Aero\Modules\Booking\Handlers\ConnectionHandler;
-use BookingTypeEnum;
 
 class BookingFactory
 {

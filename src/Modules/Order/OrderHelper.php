@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Order;
 
-use BookingTypeEnum;
+use Aero\Modules\Booking\Enums\BookingTypeEnum;
 use InvalidArgumentException;
 use WC_Order;
 use WP_Error;
