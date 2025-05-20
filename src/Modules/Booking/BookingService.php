@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use WC_Booking;
 use WC_Order;
 use WP_Error;
-use WPMailSMTP\Vendor\Aws\Arn\Exception\InvalidArnException;
+
 
 class BookingService
 {

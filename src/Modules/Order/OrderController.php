@@ -3,6 +3,7 @@
 namespace Aero\Modules\Order;
 
 use Aero\Helpers\AeroRouter;
+use Aero\Helpers\ApiResponse;
 use WP_Error;
 use WP_REST_Request;
 
@@ -20,8 +21,6 @@ class OrderController
         AeroRouter::put('order/update-status', [$this, 'update_order_status']);
 
         AeroRouter::post('order-meta', [$this, 'get_order_meta_by_id']);
-
-        AeroRouter::get('orders/insights', [$this, 'fetch_orders_insights']);
 
         AeroRouter::put('orders/billing', [$this, 'save_order_billing']);
 
@@ -42,7 +41,7 @@ class OrderController
 
             $result = $this->orderServices->get_order_meta_by_id($data);
 
-            return create_response($result, 'The Order Meta data.', 200);
+            return ApiResponse::build($result, 'The Order Meta data.', 200);
         } catch (\Throwable $th) {
             return new WP_Error('server_error', 'something is going wrong', ['status' => 500, 'details' => $th->getMessage()]);
         }
@@ -58,14 +57,7 @@ class OrderController
 
         $result = $this->orderServices->update_order_status($data);
 
-        return create_response($result, 'Order Status Updated');
-    }
-
-    public function fetch_orders_insights()
-    {
-        $result = $this->orderServices->fetch_orders_insights();
-
-        return create_response($result, 'The orders insights.', 200);
+        return ApiResponse::build($result, 'Order Status Updated');
     }
 
     public function save_order_billing(WP_REST_Request $request)
@@ -74,7 +66,7 @@ class OrderController
 
         $result = $this->orderServices->saveOrderBilling($data);
 
-        return create_response($result, 'The Order billing');
+        return ApiResponse::build($result, 'The Order billing');
     }
 
     public function find_my_order(WP_REST_Request $request)
@@ -86,6 +78,6 @@ class OrderController
 
         $result = $this->orderServices->get_order_by_id_and_email($orderId, $email);
 
-        return create_response($result, "Order Details");
+        return ApiResponse::build($result, "Order Details");
     }
 }

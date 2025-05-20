@@ -9,11 +9,10 @@ class ContactService
         $name = sanitize_text_field($data['name']);
         $email = sanitize_email($data['email']);
         $message = sanitize_textarea_field($data['message']);
-        $platform = sanitize_textarea_field($data['platform'] ?? "Web site");
 
         $to = defined("CONTACT_EMAIL") ? CONTACT_EMAIL : 'booking@fasttrackaero.com';
         $subject = "Fast Track Aero Contact: From $name";
-        $body = generate_message_body_email($email, $name, $message, $platform);
+        $body = ContactEmailBuilder::build($email, $name, $message);
 
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
@@ -31,40 +30,19 @@ class ContactService
     }
 
 
-    public function notify_receiving_order($to, $subject, $order_status, $customer_email, $order_id)
+    public function notifyNewOrder($orderStatus, $orderId)
     {
+        if (is_development() || !defined('DEVELOPER_CONTACT')) {
+            return;
+        }
         $from = defined("CONTACT_EMAIL") ? CONTACT_EMAIL : 'booking@fasttrackaero.com';
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
             "From: $from"
         ];
-        $env = "prod";
-
-        if (is_development()) {
-           return;
-        }
-
-        $body = "
-    <html>
-        <body>
-            <h3>Fast track has been received new order: </h3>
-            <p>
-                Order status: $order_status
-            </p>
-            <p>
-                Environment: $env
-            </p>
-            <p>
-                Customer email: $customer_email
-            </p>
-            <p>
-                Order Id: $order_id
-            </p>
-        </body>
-    </html>
-    ";
+        $body = ContactEmailBuilder::buildNewOrderNotification($orderStatus, $orderId);
 
 
-        wp_mail($to, $subject, $body, $headers);
+        wp_mail(DEVELOPER_CONTACT, 'New order Received', $body, $headers);
     }
 }

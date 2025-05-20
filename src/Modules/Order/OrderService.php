@@ -94,27 +94,11 @@ class OrderService
         }
         $booking_status = $result['status'] ?? 'failed to get the status';
 
-        if (defined('DEVELOPER_CONTACT')) {
-            $this->contactService->notify_receiving_order(
-                DEVELOPER_CONTACT,
-                'New order Received',
-                $booking_status,
-                $result['customer_email'],
-                $result['orderId'],
-            );
-        }
+        $this->contactService->notifyNewOrder(
+            $booking_status,
+            $result['orderId'],
+        );
         return $result;
-    }
-
-    public function fetch_orders_insights()
-    {
-        $web_order_count = $this->orderHelpers->get_orders_count_by_platform('Web site', true);
-        $app_order_count = $this->orderHelpers->get_orders_count_by_platform('Mobile App');
-
-        return [
-            'webOrdersCounts' => $web_order_count,
-            'appOrdersCounts' => $app_order_count,
-        ];
     }
 
 

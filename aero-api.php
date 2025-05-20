@@ -5,7 +5,7 @@
 * Description: Expose Custom APIs for Fast Track Aero website.
 * Version:     2.0.1
 * Author:      Youssef ACHCHIRAJ
-* Author URL:  youssef-achchiraj.vercel.com
+* Author URI:  youssef-achchiraj.vercel.app
 */
 
 
@@ -14,11 +14,10 @@ if (!defined("AERO_PLUGIN_FILE")) {
 }
 
 require __DIR__ . '/src/Autoloader.php';
-require __DIR__ . '/src/utils.php';
-require __DIR__ . '/src/Helpers/helpers.php';
-require __DIR__ . '/Plugin.php';
-require __DIR__ . '/src/Modules/Booking/Enums/BookingTypeEnum.php';
 
+if (! \Aero\Autoloader::init()) {
+    return;
+}
 
 
 $plugin = new Plugin();

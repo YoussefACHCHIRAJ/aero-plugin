@@ -5,6 +5,7 @@ namespace Aero\Modules\City;
 
 use Aero\Config\ApiConfig;
 use Aero\Helpers\AeroRouter;
+use Aero\Helpers\ApiResponse;
 use WP_Error;
 use WP_REST_Request;
 
@@ -35,7 +36,7 @@ class CityController
     {
         $cities = $this->cityService->fetchCities();
 
-        return create_response($cities, "Fetched cities");
+        return ApiResponse::build($cities, "Fetched cities");
     }
 
     public function fetchCity(WP_REST_Request $request)
@@ -48,6 +49,6 @@ class CityController
 
         $city = $this->cityService->fetchCity($slug);
 
-        return create_response($city, "Fetched city");
+        return ApiResponse::build($city, "Fetched city");
     }
 }

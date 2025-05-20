@@ -1,0 +1,16 @@
+{
+    "name": "achchiraj/aero-plugin",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Youssef ACHCHIRAJ",
+            "email": "youssefachchiraj@gmail.com"
+        }
+    ],
+     "autoload": {
+        "psr-4": {
+            "Aero\\": "src/"
+        }
+    },
+    "require": {}
+}
