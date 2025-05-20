@@ -20,26 +20,44 @@ class Autoloader
      */
     public static function init()
     {
-        spl_autoload_register(function ($class) {
-            
-            $prefix = 'Aero\\';
+        $autoloader = dirname(__DIR__) . '/vender/autoloader_packages.php';
 
-            $base_dir = __DIR__ . '/';
+        if (!is_readable($autoloader)) {
+            self::missingAutoloader();
+            return false;
+        }
 
-            $len = strlen($prefix);
-            if (strncmp($prefix, $class, $len) !== 0) {
-                
-                return;
-            }
+        $autoloaderResult = require $autoloader;
 
-            $relative_class = substr($class, $len);
+        if (!$autoloaderResult) {
+            return false;
+        }
 
-            $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-
-            if (file_exists($file)) {
-                require $file;
-            }
-        });
+        return $autoloaderResult;
     }
 
+    /**
+     * If the autoloader is missing, add an admin notice.
+     */
+    protected static function missingAutoloader()
+    {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            // This message is not translated as at this point it's too early to load translations.
+            error_log(  // phpcs:ignore
+                esc_html('Your installation of Aero Plugin is incomplete.')
+            );
+        }
+        add_action(
+            'admin_notices',
+            function () {
+?>
+            <div class="notice notice-error">
+                <p>
+                    Your installation of Aero Plugin is incomplete. failed to load the autoloader. If you installed this plugin from github, please set your development environment and run `composer dump-autoload` to generate the vendor folder.
+                </p>
+            </div>
+<?php
+            }
+        );
+    }
 }
