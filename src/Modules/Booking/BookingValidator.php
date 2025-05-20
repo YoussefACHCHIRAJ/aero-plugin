@@ -2,8 +2,8 @@
 
 namespace Aero\Modules\Booking;
 
+use Aero\Modules\Booking\Enums\BookingTypeEnum;
 use Aero\Modules\City\CityRepository;
-use BookingTypeEnum;
 use WP_Error;
 
 class BookingValidator

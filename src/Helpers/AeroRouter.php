@@ -27,7 +27,7 @@ class AeroRouter
         self::register('DELETE', $route, $callBack, $permission, $args);
     }
 
-    private static function register(string $method, string $route, callable $callBack, string $permission, array $args)
+    private static function register(string $method, string $route, callable $callBack, ?string $permission = 'administrator', ?array $args = [])
     {
         register_rest_route(ApiConfig::AERO_NAMESPACE, $route, array(
             'methods' => $method,

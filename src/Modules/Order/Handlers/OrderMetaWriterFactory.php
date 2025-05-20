@@ -2,7 +2,7 @@
 
 namespace Aero\Modules\Order\Handlers;
 
-use BookingTypeEnum;
+use Aero\Modules\Booking\Enums\BookingTypeEnum;
 
 class OrderMetaWriterFactory {
 

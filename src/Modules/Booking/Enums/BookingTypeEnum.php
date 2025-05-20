@@ -1,5 +1,7 @@
 <?php
 
+namespace Aero\Modules\Booking\Enums;
+// src/Modules/Booking/Enums/BookingTypeEnum.php
 
 enum BookingTypeEnum: string
 {

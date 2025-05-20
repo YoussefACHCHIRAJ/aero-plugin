@@ -2,9 +2,9 @@
 
 namespace Aero\Modules\Booking;
 
+use Aero\Modules\Booking\Enums\BookingTypeEnum;
 use Aero\Modules\City\CityHelper;
 use Aero\Modules\Order\OrderService;
-use BookingTypeEnum;
 use InvalidArgumentException;
 use WC_Booking;
 use WC_Order;
