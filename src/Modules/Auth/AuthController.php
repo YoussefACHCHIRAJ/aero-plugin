@@ -3,6 +3,7 @@
 namespace Aero\Modules\Auth;
 
 use Aero\Helpers\AeroRouter;
+use Aero\Helpers\ApiResponse;
 use WP_Error;
 use WP_REST_Request;
 
@@ -28,7 +29,7 @@ class AuthController
 
         $result = $this->authService->login($data);
 
-        return create_response($result, "Authentication successfully");
+        return ApiResponse::build($result, "Authentication successfully");
     }
 
     public function wc_register_customer(WP_REST_Request $request)
@@ -49,6 +50,6 @@ class AuthController
 
         $result = $this->authService->register($data);
 
-        return create_response($result, 'Register successfully', 201);
+        return ApiResponse::build($result, 'Register successfully', 201);
     }
 }

@@ -4,9 +4,9 @@ namespace Aero\Modules\Contact;
 
 class ContactEmailBuilder
 {
-    public static function build(string $email, string $name, string $message): string
-    {
-        return <<<HTML
+  public static function build(string $email, string $name, string $message): string
+  {
+    return <<<HTML
         <html>
           <body style='margin:0;padding:4em 1em;background-color:#f5f5f5;'>
             <table width='100%' cellpadding='0' cellspacing='0' border='0'>
@@ -42,5 +42,50 @@ class ContactEmailBuilder
           </body>
         </html>
         HTML;
-    }
+  }
+
+  public static function buildNewOrderNotification(string $orderStatus, int $orderId)
+  {
+    return <<<HTML
+      <html>
+        <body>
+            <h3>Fast track has been received new order: </h3>
+            <p>
+                Order status: $orderStatus
+            </p>
+            <p>
+                Order Id: $orderId
+            </p>
+        </body>
+      </html>
+      HTML;
+  }
+
+  public static function buildRatingNotification(string $name, int $rateCount, string $comment, string $email, string $phone)
+  {
+    return <<<HTML
+      <html>
+        <body>
+            <h3>Fast Track has received a rating from: $name</h3>
+            <p>
+                Rating Score: $rateCount/5
+            </p>
+            <div style=' padding: .5em .2em; margin: 0'>
+                <strong style='font-size: 1rem; color: #4e1874'>Customer Comment: </strong>
+                <p style='line-height: 1.5;'>
+                $comment
+                </p>
+            </div>
+            <hr style='border: 1px solid #bd1a83'/>
+            <div style='padding: 0.5em; color: #4e1874'>
+                <span style='display: block; margin-bottom: 5px'>
+                Name: <strong style='color: #bd1a83'>$name</strong>
+                </span>
+                <span style='display: block; margin-bottom: 5px'> Email: <strong style='color: #bd1a83'>$email</strong> </span>
+                <span style='display: block; margin-bottom: 5px'> Phone: <strong style='color: #bd1a83'>$phone</strong> </span>
+            </div>
+        </body>
+      </html>
+      HTML;
+  }
 }

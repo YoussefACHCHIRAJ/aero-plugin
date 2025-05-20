@@ -14,7 +14,7 @@ class ApiResponse
         ], $status);
     }
 
-    public static function success($data, string $message, int $statusCode = 200): WP_REST_Response
+    public static function build($data, string $message, int $statusCode = 200): WP_REST_Response
     {
         if (is_wp_error($data)) {
             return $data;

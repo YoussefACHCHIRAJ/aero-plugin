@@ -40,7 +40,7 @@ class ApiRegister
     {
         add_action('rest_api_init', [$this, 'register_endpoints'], 10);
 
-        if (defined('WP_ENVIRONMENT_TYPE') && WP_ENVIRONMENT_TYPE === 'local') {
+        if (is_development()) {
             add_filter('woocommerce_rest_check_permissions', '__return_true');
         }
     }

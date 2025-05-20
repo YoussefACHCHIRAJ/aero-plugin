@@ -3,6 +3,7 @@
 namespace Aero\Modules\Payment;
 
 use Aero\Helpers\AeroRouter;
+use Aero\Helpers\ApiResponse;
 use Aero\Modules\Order\OrderHelper;
 use WP_REST_Request;
 
@@ -31,7 +32,7 @@ class PaymentController
         $data = $request->get_json_params();
         $result = $this->paymentService->link_order_with_paypal_id($data);
 
-        return create_response($result, 'Order has been linked with paypal');
+        return ApiResponse::build($result, 'Order has been linked with paypal');
     }
 
 
@@ -40,6 +41,6 @@ class PaymentController
         $data = $request->get_json_params();
 
         $result = $this->paymentService->validate_payment_order($data);
-        return create_response($result, 'Order Payment Validation completed.');
+        return ApiResponse::build($result, 'Order Payment Validation completed.');
     }
 }

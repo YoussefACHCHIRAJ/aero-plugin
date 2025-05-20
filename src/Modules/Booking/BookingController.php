@@ -3,6 +3,7 @@
 namespace Aero\Modules\Booking;
 
 use Aero\Helpers\AeroRouter;
+use Aero\Helpers\ApiResponse;
 use Aero\Modules\Booking\BookingService;
 use WP_Error;
 use WP_REST_Request;
@@ -29,7 +30,7 @@ class BookingController
 
             $result = $this->bookingService->create($data);
 
-            return create_response($result, 'The booking has been saved and the order has been created', 201);
+            return ApiResponse::build($result, 'The booking has been saved and the order has been created', 201);
         } catch (\Throwable $th) {
             return new WP_Error('server_error', 'something is going wrong', ['status' => 500, 'details' => $th->getMessage()]);
         }

@@ -4,6 +4,7 @@ namespace Aero\Modules\Product;
 
 use Aero\Config\ApiConfig;
 use Aero\Helpers\AeroRouter;
+use Aero\Helpers\ApiResponse;
 use WP_REST_Request;
 
 class ProductController
@@ -36,7 +37,7 @@ class ProductController
 
         $result = $this->productService->get_product_by_slug($slug);
 
-        return create_response($result, 'Product fetched by slug.');
+        return ApiResponse::build($result, 'Product fetched by slug.');
     }
 
     public function get_city_service_by_slug(WP_REST_Request $request)
@@ -47,6 +48,6 @@ class ProductController
 
         $result = $this->productService->get_city_service_by_slug($citySlug, $serviceSlug);
 
-        return create_response($result, 'Product fetched by slug.');
+        return ApiResponse::build($result, 'Product fetched by slug.');
     }
 }
