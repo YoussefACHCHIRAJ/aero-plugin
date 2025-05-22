@@ -3,16 +3,17 @@
 
 namespace Aero\Modules\Rating;
 
+use Aero\Contracts\AeroControllerContract;
 use Aero\Helpers\AeroRouter;
-use Aero\Module\Email\EmailService;
 use Aero\Modules\Email\EmailBuilder;
+use Aero\Modules\Email\EmailService;
 use WP_REST_Request;
 use WP_REST_Response;
 
-class RatingController
+class RatingController implements AeroControllerContract
 {
 
-    public function register_routes()
+    public function registerRoutes()
     {
         AeroRouter::post('rating', [$this, 'notifyReceivingRating']);
     }

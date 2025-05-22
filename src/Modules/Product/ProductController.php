@@ -2,12 +2,12 @@
 
 namespace Aero\Modules\Product;
 
-use Aero\Config\ApiConfig;
+use Aero\Contracts\AeroControllerContract;
 use Aero\Helpers\AeroRouter;
 use Aero\Helpers\ApiResponse;
 use WP_REST_Request;
 
-class ProductController
+class ProductController implements AeroControllerContract
 {
     protected $productService;
 
@@ -16,7 +16,7 @@ class ProductController
         $this->productService = $productService;
     }
 
-    public function register_routes()
+    public function registerRoutes()
     {
         AeroRouter::get('products', [$this, 'get_product_by_slug'], null, [
             'slug' => [

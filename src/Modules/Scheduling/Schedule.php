@@ -11,7 +11,7 @@ class Schedule
     /**
      * Run Schedule Jobs
      */
-    public function run()
+    public static function run()
     {
         try {
             BookingReview::sendRequestReview();
@@ -19,4 +19,6 @@ class Schedule
             return new WP_Error('error', "Failed scheduling. Error details: " . $th->getMessage());
         }
     }
+
+
 }

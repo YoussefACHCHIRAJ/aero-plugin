@@ -33,6 +33,10 @@ class Plugin
 
     public function boot()
     {
+        if(!wp_next_scheduled('aero_run_my_job')) {
+            wp_schedule_event(strtotime("09:01:00"), 'daily', 'aero_run_my_job');
+        }
+        
         Autoloader::init();
 
         $this->registerModules();

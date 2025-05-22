@@ -2,12 +2,13 @@
 
 namespace Aero\Modules\Order;
 
+use Aero\Contracts\AeroControllerContract;
 use Aero\Helpers\AeroRouter;
 use Aero\Helpers\ApiResponse;
 use WP_Error;
 use WP_REST_Request;
 
-class OrderController
+class OrderController implements AeroControllerContract
 {
     protected $orderServices;
 
@@ -16,7 +17,7 @@ class OrderController
         $this->orderServices = $orderServices;
     }
 
-    public function register_routes()
+    public function registerRoutes()
     {
         AeroRouter::put('order/update-status', [$this, 'update_order_status']);
 

@@ -2,12 +2,13 @@
 
 namespace Aero\Modules\Payment;
 
+use Aero\Contracts\AeroControllerContract;
 use Aero\Helpers\AeroRouter;
 use Aero\Helpers\ApiResponse;
 use Aero\Modules\Order\OrderHelper;
 use WP_REST_Request;
 
-class PaymentController
+class PaymentController implements AeroControllerContract
 {
 
     protected $paymentService;
@@ -19,7 +20,7 @@ class PaymentController
         $this->orderHelper =  $orderHelper;
     }
 
-    public function register_routes()
+    public function registerRoutes()
     {
 
         AeroRouter::post('set-paypal-orderId', [$this, 'link_order_with_paypal_id']);

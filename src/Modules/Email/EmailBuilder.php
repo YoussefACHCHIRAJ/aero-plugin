@@ -93,8 +93,8 @@ class EmailBuilder
   {
     return <<<HTML
         <html>
-          <body style='margin:0 auto;padding:4em 1em;max-width: 800px'>
-            <div style="margin-bottom: 2em;border: 1px solid #333;background-color:#FFFFFF">
+          <body style='margin:0;padding:4em 1em;background-color:#f5f5f5;'>
+            <div style="margin-bottom: 2em">
               <p>Hi $customerName,</p>
               <p>We hope you’re doing well. You used our <strong>Fast Track Aero service at $airportName</strong> on <strong>$serviceDate</strong>, and we want to know how it went.</p>
               <p>Could you spare 60 seconds to share your feedback and rate us on Google? Your honest review helps us improve and helps fellow travelers choose the best service.</p>

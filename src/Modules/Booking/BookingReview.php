@@ -47,7 +47,6 @@ class BookingReview
         $start = $booking->get_start();
 
         return ($now - $start) <= self::REVIEW_ELIGIBILITY_WINDOW && ($now > $start);
-
     }
 
     private static function sendReviewRequest(WC_Booking $booking)
@@ -67,8 +66,12 @@ class BookingReview
         $emailBody = EmailBuilder::buildRequestReview($customerName, $airportName, date('Y/m/d', $bookingStartDate));
         $emailHeader = EmailService::buildEmailHeader(CONTACT_EMAIL);
 
-        if($customerEmail === 'youssefachchiraj@gmail.com' && $order->get_id() === 7209)
-        $sent = EmailService::send($customerEmail, "How was your Fast Track Aero experience on " . date('Y/m/d', $bookingStartDate) . "?", $emailBody, $emailHeader);
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log("********Customer Email " . $customerEmail);
+        }
+
+        if (!empty($customerEmail))
+            $sent = EmailService::send($customerEmail, "How was your Fast Track Aero experience on " . date('Y/m/d', $bookingStartDate) . "?", $emailBody, $emailHeader);
 
         if ($sent) {
             $booking->add_meta_data('_request_review_sent', true);
@@ -82,19 +85,6 @@ class BookingReview
             'post_type' => 'wc_booking',
             'post_status' => ['complete', 'paid', 'confirm'],
             'posts_per_page' => -1,
-            'meta_query' => [
-                'relation' => 'AND',
-                [
-                    'key' => '_start_date',
-                    'value' => [
-                        current_time("timestamp") - 4 * DAY_IN_SECONDS,
-                        current_time("timestamp")
-                    ],
-                    'compare' => 'BETWEEN',
-                    'type' => 'NUMERIC'
-                ]
-            ]
-
         ];
 
         return new WP_Query($args);
