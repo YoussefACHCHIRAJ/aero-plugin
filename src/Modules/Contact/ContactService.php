@@ -2,6 +2,9 @@
 
 namespace Aero\Modules\Contact;
 
+use Aero\Modules\Email\EmailService;
+use Aero\Modules\Email\EmailBuilder;
+
 class ContactService
 {
     public function contact_form(array $data)
@@ -12,7 +15,7 @@ class ContactService
 
         $to = defined("CONTACT_EMAIL") ? CONTACT_EMAIL : 'booking@fasttrackaero.com';
         $subject = "Fast Track Aero Contact: From $name";
-        $body = ContactEmailBuilder::build($email, $name, $message);
+        $body = EmailBuilder::buildContactEmail($email, $name, $message);
 
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
@@ -20,7 +23,7 @@ class ContactService
             "From: Fast Track Aero <$to>"
         ];
 
-        $email_result = wp_mail($to, $subject, $body, $headers);
+        $email_result = EmailService::send($to, $subject, $body, $headers);
 
         if ($email_result) {
             return true;
@@ -40,9 +43,9 @@ class ContactService
             'Content-Type: text/html; charset=UTF-8',
             "From: $from"
         ];
-        $body = ContactEmailBuilder::buildNewOrderNotification($orderStatus, $orderId);
+        $body = EmailBuilder::buildNewOrderNotification($orderStatus, $orderId);
 
 
-        wp_mail(DEVELOPER_CONTACT, 'New order Received', $body, $headers);
+        EmailService::send(DEVELOPER_CONTACT, 'New order Received', $body, $headers);
     }
 }

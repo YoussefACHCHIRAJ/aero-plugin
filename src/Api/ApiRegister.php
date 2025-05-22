@@ -7,6 +7,7 @@
 
 namespace Aero\Api;
 
+use Aero\Contracts\AeroControllerContract;
 use Aero\Modules\Auth\AuthController;
 use Aero\Modules\Booking\BookingController;
 use Aero\Modules\City\CityController;
@@ -15,6 +16,7 @@ use Aero\Modules\Order\OrderController;
 use Aero\Modules\Payment\PaymentController;
 use Aero\Modules\Product\ProductController;
 use Aero\Modules\Rating\RatingController;
+use Aero\Modules\Scheduling\ScheduleController;
 
 class ApiRegister
 {
@@ -27,7 +29,8 @@ class ApiRegister
         ProductController::class,
         AuthController::class,
         ContactController::class,
-        RatingController::class
+        RatingController::class,
+        ScheduleController::class
     ];
 
 
@@ -50,7 +53,7 @@ class ApiRegister
 
 
         foreach ($this->controllers as $controller) {
-            container($controller)->register_routes();
+            container($controller)->registerRoutes();
         }
     }
 }

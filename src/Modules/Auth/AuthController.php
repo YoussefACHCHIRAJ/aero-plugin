@@ -2,13 +2,14 @@
 
 namespace Aero\Modules\Auth;
 
+use Aero\Contracts\AeroControllerContract;
 use Aero\Helpers\AeroRouter;
 use Aero\Helpers\ApiResponse;
 use WP_Error;
 use WP_REST_Request;
 
-class AuthController
-{
+class AuthController implements AeroControllerContract
+{ 
     protected $authService;
 
     public function __construct(AuthService $authService)
@@ -16,7 +17,7 @@ class AuthController
         $this->authService = $authService;
     }
 
-    public function register_routes()
+    public function registerRoutes()
     {
         AeroRouter::post('auth/register', [$this, 'wc_register_customer']);
 

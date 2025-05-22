@@ -130,7 +130,7 @@ class OrderHelper
             return new WP_Error("failed", 'Something went wrong while capture the payment', ['status' => 500]);
         }
     }
-
+    
     public function calculateTotalPrice(array $data, bool $hasPersonsTypes, WC_Order $order)
     {
 

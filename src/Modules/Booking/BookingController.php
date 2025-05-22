@@ -2,13 +2,15 @@
 
 namespace Aero\Modules\Booking;
 
+use Aero\Contracts\AeroControllerContract;
 use Aero\Helpers\AeroRouter;
 use Aero\Helpers\ApiResponse;
 use Aero\Modules\Booking\BookingService;
+
 use WP_Error;
 use WP_REST_Request;
 
-class BookingController
+class BookingController implements AeroControllerContract
 {
     protected $bookingService;
 
@@ -18,7 +20,7 @@ class BookingController
         $this->bookingService = $bookingService;
     }
 
-    public function register_routes()
+    public function registerRoutes()
     {
         AeroRouter::post('booking', [$this, 'create']);
     }

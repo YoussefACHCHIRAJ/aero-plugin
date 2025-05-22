@@ -3,13 +3,13 @@
 
 namespace Aero\Modules\City;
 
-use Aero\Config\ApiConfig;
+use Aero\Contracts\AeroControllerContract;
 use Aero\Helpers\AeroRouter;
 use Aero\Helpers\ApiResponse;
 use WP_Error;
 use WP_REST_Request;
 
-class CityController
+class CityController implements AeroControllerContract
 {
 
     protected $cityService;
@@ -19,7 +19,7 @@ class CityController
         $this->cityService = $cityService;
     }
 
-    public function register_routes()
+    public function registerRoutes()
     {
         AeroRouter::get('cities', [$this, 'fetchCities']);
         AeroRouter::get('city', [$this, 'fetchCity'], null, [

@@ -3,11 +3,12 @@
 namespace Aero\Modules\Contact;
 
 use Aero\Config\ApiConfig;
+use Aero\Contracts\AeroControllerContract;
 use Aero\Helpers\AeroRouter;
 use WP_REST_Request;
 use WP_REST_Response;
 
-class ContactController
+class ContactController implements AeroControllerContract
 {
 
     protected $contactService;
@@ -17,7 +18,7 @@ class ContactController
         $this->contactService = $contactService;
     }
 
-    public function register_routes() {
+    public function registerRoutes() {
         AeroRouter::post('contact', [$this, 'handle_contact_form']);
     }
 

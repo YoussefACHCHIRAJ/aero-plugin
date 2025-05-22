@@ -4,12 +4,14 @@ namespace Aero\Modules\Booking;
 
 use Aero\Modules\Booking\Enums\BookingTypeEnum;
 use Aero\Modules\City\CityHelper;
+use Aero\Modules\Email\EmailBuilder;
+use Aero\Modules\Email\EmailService;
 use Aero\Modules\Order\OrderService;
 use InvalidArgumentException;
 use WC_Booking;
 use WC_Order;
 use WP_Error;
-
+use WP_Query;
 
 class BookingService
 {
@@ -113,4 +115,5 @@ class BookingService
     {
         $this->orderId = $id;
     }
+
 }
