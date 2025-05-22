@@ -1,10 +1,10 @@
 <?php
 
-namespace Aero\Modules\Contact;
+namespace Aero\Modules\Email;
 
-class ContactEmailBuilder
+class EmailBuilder
 {
-  public static function build(string $email, string $name, string $message): string
+  public static function buildContactEmail(string $email, string $name, string $message): string
   {
     return <<<HTML
         <html>
@@ -86,6 +86,35 @@ class ContactEmailBuilder
             </div>
         </body>
       </html>
+      HTML;
+  }
+
+  public static function buildRequestReview(string $customerName, string $airportName, string $serviceDate): string
+  {
+    return <<<HTML
+        <html>
+          <body style='margin:0 auto;padding:4em 1em;max-width: 800px'>
+            <div style="margin-bottom: 2em;border: 1px solid #333;background-color:#FFFFFF">
+              <p>Hi $customerName,</p>
+              <p>We hope you’re doing well. You used our <strong>Fast Track Aero service at $airportName</strong> on <strong>$serviceDate</strong>, and we want to know how it went.</p>
+              <p>Could you spare 60 seconds to share your feedback and rate us on Google? Your honest review helps us improve and helps fellow travelers choose the best service.</p>
+              <div>
+                <p>Please click here to leave your review:  </p>
+                <a href="https://g.page/r/CaVSlLp-5kJVEBM/review" style="text-decoration: underline"><strong>Rate Fast Track Aero</strong></a>
+              </div>
+              <p>
+                We genuinely value your feedback and every rating makes a difference. Thank you for trusting Fast Track Aero with your journey.
+              </p>
+
+              <p>Best regards,</p>
+              <p>The Fast Track Aero Team</p>
+            </div>
+
+            <div >
+              <a href="https://fasttrackaero.com">Fast Track Aero Official Website</a>
+            </div>
+          </body>
+        </html>
       HTML;
   }
 }

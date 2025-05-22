@@ -3,9 +3,9 @@
 
 namespace Aero\Modules\Rating;
 
-use Aero\Config\ApiConfig;
 use Aero\Helpers\AeroRouter;
-use Aero\Modules\Contact\ContactEmailBuilder;
+use Aero\Module\Email\EmailService;
+use Aero\Modules\Email\EmailBuilder;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -33,9 +33,9 @@ class RatingController
             "From: booking@fasttrackaero.com"
         ];
 
-        $body = ContactEmailBuilder::buildRatingNotification($name, $rateCount, $comment, $email, $phone);
+        $body = EmailBuilder::buildRatingNotification($name, $rateCount, $comment, $email, $phone);
 
-        $result = wp_mail('achchiraj@traveldesign.ma', 'Fast Track Aero Rating: ', $body, $headers);
+        $result = EmailService::send('achchiraj@traveldesign.ma', 'Fast Track Aero Rating: ', $body, $headers);
 
         return new WP_REST_Response($result);
     }

@@ -5,6 +5,7 @@ namespace Aero\Modules\Booking;
 use Aero\Helpers\AeroRouter;
 use Aero\Helpers\ApiResponse;
 use Aero\Modules\Booking\BookingService;
+use Aero\Modules\Scheduling\Schedule;
 use WP_Error;
 use WP_REST_Request;
 
@@ -21,6 +22,7 @@ class BookingController
     public function register_routes()
     {
         AeroRouter::post('booking', [$this, 'create']);
+        AeroRouter::get('booking', [Schedule::class, 'run']);
     }
 
     public function create(WP_REST_Request $request)
