@@ -17,6 +17,7 @@ class BookingReview
     public static function sendRequestReview()
     {
         try {
+            $sentEmailsCount = 0;
             $bookings = self::getEligibleBookings();
             $now = current_time('timestamp');
 
@@ -24,7 +25,7 @@ class BookingReview
                 $booking = get_wc_booking($b->ID);
 
                 if (self::shouldSendReviewRequest($booking, $now)) {
-                    self::sendReviewRequest($booking);
+                    $sentEmailsCount += self::sendReviewRequest($booking);
                 }
             }
 
@@ -32,28 +33,32 @@ class BookingReview
                 error_log("Scheduling triggered at " . date('Y/m/d H:i:s', $now));
             }
 
+            self::sentEmailSummaryToDeveloper($sentEmailsCount);
+
             return "Scheduling triggered";
         } catch (\Throwable $th) {
             return new WP_Error('error', "Failed send request review. Error details: " . $th->getMessage());
         }
     }
 
-    private static function shouldSendReviewRequest(WC_Booking $booking, string $now)
+    private static function shouldSendReviewRequest(WC_Booking $booking, int $now)
     {
-        $requestReviewSentBefore = $booking->get_meta('_request_review_sent');
-
-        if ($requestReviewSentBefore) return false;
+        if ($booking->get_meta('_request_review_sent')) return false;
 
         $start = $booking->get_start();
+        $oneDayLater = $start + DAY_IN_SECONDS;
+        $afterEligibilityTime = $start + self::REVIEW_ELIGIBILITY_WINDOW;
 
-        return ($now - $start) <= self::REVIEW_ELIGIBILITY_WINDOW && ($now > $start);
+        // check if the current time is after 1 day from booking and before a certain eligibility time
+        return $now <= $afterEligibilityTime && $now > $oneDayLater;
     }
 
     private static function sendReviewRequest(WC_Booking $booking)
     {
+        $sentEmailsCount = 0;
         $order = $booking->get_order();
 
-        if (!$order) return;
+        if (!$order) return 0;
 
         $bookingStartDate = $booking->get_start();
 
@@ -74,9 +79,12 @@ class BookingReview
             $sent = EmailService::send($customerEmail, "How was your Fast Track Aero experience on " . date('Y/m/d', $bookingStartDate) . "?", $emailBody, $emailHeader);
 
         if ($sent) {
+            $sentEmailsCount++;
             $booking->add_meta_data('_request_review_sent', true);
             $booking->save_meta_data();
         }
+
+        return $sentEmailsCount;
     }
 
     private static function getEligibleBookings()
@@ -88,5 +96,12 @@ class BookingReview
         ];
 
         return new WP_Query($args);
+    }
+
+    private static function sentEmailSummaryToDeveloper(int $emailsCount)
+    {
+        $emailBody = EmailBuilder::buildRequestReviewSummary($emailsCount, "ACHCHIRAJ");
+        $developerEmail = DEVELOPER_CONTACT;
+        EmailService::send($developerEmail, "Request Reviews Summary", $emailBody, EmailService::buildEmailHeader(DEVELOPER_CONTACT, "Aero Plugin <$developerEmail>"));
     }
 }

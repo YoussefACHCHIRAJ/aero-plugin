@@ -17,11 +17,7 @@ class ContactService
         $subject = "Fast Track Aero Contact: From $name";
         $body = EmailBuilder::buildContactEmail($email, $name, $message);
 
-        $headers = [
-            'Content-Type: text/html; charset=UTF-8',
-            'Reply-To: ' . $email,
-            "From: Fast Track Aero <$to>"
-        ];
+        $headers = EmailService::buildEmailHeader($email, "Fast Track Aero <$to>");
 
         $email_result = EmailService::send($to, $subject, $body, $headers);
 

@@ -20,6 +20,9 @@ class ScheduleController  implements AeroControllerContract
         AeroRouter::get("schedule/trigger", [$this, 'triggerScheduledJobs']);
     }
 
+    /**
+     * Trigger schedule manually using HTTP
+     */
     public function triggerScheduledJobs()
     {
         $this->schedule->run();

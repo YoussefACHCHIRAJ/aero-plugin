@@ -105,11 +105,11 @@ class ProductHelper
         return $products;
     }
 
-    public function extractPersonsFromProduct($personTypes)
+    public function extractPersonsFromProduct($servicePersonTypes)
     {
 
         $personTypes = [];
-        $personTypesIds = array_keys($personTypes);
+        $personTypesIds = array_keys($servicePersonTypes);
         
         foreach ($personTypesIds as $id) {
             $details = get_post($id);

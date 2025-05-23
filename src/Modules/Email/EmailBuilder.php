@@ -95,15 +95,55 @@ class EmailBuilder
         <html>
           <body style='margin:0;padding:4em 1em;background-color:#f5f5f5;'>
             <div style="margin-bottom: 2em">
-              <p>Hi $customerName,</p>
-              <p>We hope you’re doing well. You used our <strong>Fast Track Aero service at $airportName</strong> on <strong>$serviceDate</strong>, and we want to know how it went.</p>
-              <p>Could you spare 60 seconds to share your feedback and rate us on Google? Your honest review helps us improve and helps fellow travelers choose the best service.</p>
+              
+              <p style="font-size:16px;">Hi $customerName,</p>
+              
+              <p style="font-size:16px;line-height: 25px;">We hope your recent <strong>Fast Track experience at $airportName</strong> on <strong>$serviceDate</strong> made your travel smoother and more enjoyable.</p>
+              
+              <p style="font-size:16px;line-height: 25px;">Would you take a moment to share your experience with others?</p>
+              <p style="font-size:16px;line-height: 25px;"><strong>It only takes one minute</strong> and your feedback helps other travelers make better decisions, and helps us keep improving.</p>
+              
+              <a style="font-size:16px;" href="https://g.page/r/CaVSlLp-5kJVEBM/review" style="text-decoration: underline"><strong>Leave a Google Review</strong></a>
+
+              <p style="font-size:16px;line-height: 25px;">To help us improve and help future travelers choose the right service, here are two quick questions:</p>
+
+              <ul style="font-size:16px;line-height: 25px;">
+                <li style="line-height: 25px;">Did Fast Track Aero help you skip long lines and save time at the airport?</li>
+                <li style="line-height: 25px;">Did our team make your arrival or departure experience more comfortable?</li>
+              </ul>
+              
+              <p style="font-size:15px;line-height: 25px;">
+                Thanks again for choosing Fast Track Aero. Your journey matters, and so does your voice.
+              </p>
+
+              <p style="font-size:15px;">Best regards,</p>
+              <p style="font-size:15px;">The Fast Track Aero Team</p>
+            </div>
+
+            <hr style="margin-top:2em;">
+            <p style="text-align:center;">
+              <a href="https://fasttrackaero.com" style="color:#0066cc;">Visit Our Official Website</a>
+            </p>
+          </body>
+        </html>
+      HTML;
+  }
+
+  public static function buildRequestReviewSummary(int $emailsCount, string $receiverName): string
+  {
+    $today = current_time('Y-m-d H:i:s');
+
+    return <<<HTML
+        <html>
+          <body style='margin:0;padding:4em 1em;background-color:#f5f5f5;'>
+            <div style="margin-bottom: 2em">
+              <p>Hi $receiverName,</p>
+              <p>This is the summary of request reviews for $today</p>
               <div>
-                <p>Please click here to leave your review:  </p>
-                <a href="https://g.page/r/CaVSlLp-5kJVEBM/review" style="text-decoration: underline"><strong>Rate Fast Track Aero</strong></a>
+                
               </div>
               <p>
-                We genuinely value your feedback and every rating makes a difference. Thank you for trusting Fast Track Aero with your journey.
+                $emailsCount has been sent.
               </p>
 
               <p>Best regards,</p>
