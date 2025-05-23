@@ -29,6 +29,8 @@ class AeroRouter
 
     private static function register(string $method, string $route, callable $callBack, ?string $permission = 'administrator', ?array $args = [])
     {
+        if(!$permission) $permission = 'administrator';
+        
         register_rest_route(ApiConfig::AERO_NAMESPACE, $route, array(
             'methods' => $method,
             'callback' => $callBack,

@@ -107,7 +107,6 @@ class ProductService
             }
         }
 
-        //* prepare product for response:
         $product_data = [
             'id' => $product->get_id(),
             'name' => $product->get_name(),
@@ -118,8 +117,6 @@ class ProductService
             'short_description' => $product->get_short_description(),
             'stock_status' => $product->get_stock_status(),
             'has_person_types' => $product->has_person_types,
-            'addons' => $product->get_meta('_product_addons'),
-            'pricing' => $product->pricing,
             'person_types' => $this->get_person_types_for_product($product),
             'min_date' => [
                 'unit' => $product->min_date_unit,
@@ -138,22 +135,10 @@ class ProductService
 
     private function get_person_types_for_product(WC_Product $product)
     {
-
-        $cache_key = 'person_types_' . $product->get_id();
-        $cached_person_types = wp_cache_get($cache_key, 'person_types_group');
-
-        if ($cached_person_types) {
-            return $cached_person_types;
-        }
-
         if (!$product->has_person_types) {
             return null;
         }
 
-        $all_person_types = $this->productHelper->extractPersonsFromProduct($product->person_types);
-
-
-        wp_cache_set($cache_key, $all_person_types, 'person_types_group', 3600);
-        return $all_person_types;
+        return $this->productHelper->extractPersonsFromProduct($product->person_types);
     }
 }

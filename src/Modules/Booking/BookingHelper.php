@@ -33,6 +33,7 @@ class BookingHelper
 
         $booking_data = [
             'start_date' => $start_date_timestamp,
+            'end_date' => $start_date_timestamp,
             'all_day' => 1,
             'customer_id' => 0,
             'person_counts' => $persons,
