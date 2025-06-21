@@ -73,7 +73,19 @@ class CityService
         $city['products'] = $products;
         $city['yoast_head_json'] = $yoast_head_json;
 
-        // wp_cache_set($city_cache_key, 'cities_caches', 3600);
+        
+        // add other cities
+        $terms = $this->cityRepository->fetchAllExceptBySlug($slug);
+
+        if (!$terms || sizeof($terms) < 1) {
+            return $city;
+        }
+
+        foreach ($terms as $term) {
+            $cities[] = $this->cityHelper->prepare_city_for_response($term);
+        }
+
+        $city['otherCities'] = $cities;
 
         return $city;
     }
