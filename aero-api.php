@@ -3,7 +3,7 @@
 /*
 * Plugin name: Fast Track Aero Plugin
 * Description: Expose Custom APIs for Fast Track Aero website.
-* Version:     2.0.2
+* Version:     2.0.3
 * Author:      Youssef ACHCHIRAJ
 * Author URI:  youssef-achchiraj.vercel.app
 */
