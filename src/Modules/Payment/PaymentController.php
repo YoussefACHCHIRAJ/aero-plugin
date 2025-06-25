@@ -23,25 +23,35 @@ class PaymentController implements AeroControllerContract
     public function registerRoutes()
     {
 
-        AeroRouter::post('set-paypal-orderId', [$this, 'link_order_with_paypal_id']);
-        AeroRouter::post('validate-payment-order', [$this, 'validate_payment_order']);
+        AeroRouter::post('set-paypal-orderId', [$this, 'linkOrderWithPaypalId']);
+        AeroRouter::post('order/paypal-email', [$this, 'savePaypalEmail']);
+        AeroRouter::post('validate-payment-order', [$this, 'validatePaymentOrder']);
     }
 
 
-    public function link_order_with_paypal_id(WP_REST_Request $request)
+    public function linkOrderWithPaypalId(WP_REST_Request $request)
     {
         $data = $request->get_json_params();
-        $result = $this->paymentService->link_order_with_paypal_id($data);
+        $result = $this->paymentService->linkOrderWithPaypalId($data);
 
         return ApiResponse::build($result, 'Order has been linked with paypal');
     }
 
 
-    public function validate_payment_order(WP_REST_Request $request)
+    public function validatePaymentOrder(WP_REST_Request $request)
     {
         $data = $request->get_json_params();
 
-        $result = $this->paymentService->validate_payment_order($data);
+        $result = $this->paymentService->validatePaymentOrder($data);
         return ApiResponse::build($result, 'Order Payment Validation completed.');
+    }
+
+    public function savePaypalEmail(WP_REST_Request $request)
+    {
+        $data = $request->get_json_params();
+
+        $this->paymentService->savePaypalEmail($data);
+
+        return ApiResponse::build(['message' => 'Paypal Email handled'], 'Paypal Email handled');
     }
 }
