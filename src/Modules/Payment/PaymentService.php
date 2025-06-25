@@ -14,7 +14,7 @@ class PaymentService
         $this->orderHelpers = $orderHelpers;
     }
 
-    public function link_order_with_paypal_id(array $data)
+    public function linkOrderWithPaypalId(array $data)
     {
         $order = null;
 
@@ -41,7 +41,7 @@ class PaymentService
     }
 
 
-    public function validate_payment_order(array $data)
+    public function validatePaymentOrder(array $data)
     {
 
         if (!isset($data['id'])) {
@@ -79,6 +79,31 @@ class PaymentService
             return false;
         } catch (\Throwable $th) {
             return new WP_Error('Failed', 'Something went wrong.', ['status' => 500]);
+        }
+    }
+
+    public function savePaypalEmail(array $data) {
+        $paypalOrderId = $data['paymentOrder']['id'] ?? null;
+        $paypalEmail = $data['paypalEmail'] ?? null;
+
+        if(!$paypalOrderId || !$paypalEmail) return;
+
+        try {
+            $order_id = $this->orderHelpers->get_order_id_by_meta('_paypal_order_id', $data['id']);
+
+            $order = wc_get_order($order_id);
+
+            if (! $order) {
+                return;
+            }
+
+            $order->update_meta_data('__paypal_address_email', $paypalEmail);
+            $order->add_order_note("Paypal address email: $paypalEmail");
+
+            $order->save();
+
+        } catch (\Throwable $th) {
+            return;
         }
     }
 }

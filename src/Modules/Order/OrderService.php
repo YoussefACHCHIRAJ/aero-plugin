@@ -122,7 +122,6 @@ class OrderService
             ];
 
             $order->set_address($address, "billing");
-            $order->set_address($address, "shipping");
             $order->add_order_note('Order Billing saved, waiting the payment');
             $order->save();
 
